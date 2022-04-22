@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import './InputTodo.css';
 import { useDispatch } from 'react-redux';
-import { addTodo, deleteTodo, toggleEditing } from '../../redux/actions/actionTodo';
+import { addTodo, deleteTodo, renameTodo, toggleEditing } from '../../redux/actions/actionTodo';
 import { useTypeSelector } from '../../hooks/useTypeSelector';
 import { ITodo } from '../../interfaces/TodoState';
 
@@ -20,6 +20,8 @@ const InputTodo = () => {
     id: Date.now(),
     isEdit: false,
   };
+
+  console.log(todo);
   const handleAddTodo = (e: any) => {
     e.preventDefault();
 
@@ -34,10 +36,13 @@ const InputTodo = () => {
     dispatch(deleteTodo(id));
   };
 
-  const onUpdateTodo = (id: number) => () => {
+  const handleUpdateTodo = (id: number) => () => {
     dispatch(toggleEditing(id));
   };
 
+  const handleRenameTodo = (id: number) => (e: any) => {
+    dispatch(renameTodo(id, e));
+  };
   return (
     <div className='input-cont'>
       <h1>Todo-Redux</h1>
@@ -52,19 +57,18 @@ const InputTodo = () => {
       <div>
         {todo.map(({ id, text, isEdit }: ITodo) => {
           return (
-            <ul key={id}>
-              <li>
-                {!isEdit ? (
-                  text
-                ) : (
-                  <>
-                    <input type='text' />
-                  </>
-                )}
-                {!isEdit ? <button onClick={handleDeleteTodo(id)}>X</button> : <button>Save</button>}
-                <button onClick={onUpdateTodo(id)}>Change</button>
-              </li>
-            </ul>
+            <p key={id}>
+              {!isEdit ? (
+                text
+              ) : (
+                <>
+                  <input type='text' value={text} onChange={handleRenameTodo(id)} />
+                </>
+              )}
+              {!isEdit ? <button onClick={handleUpdateTodo(id)}>Change</button> : <button onClick={handleUpdateTodo(id)}>Save</button>}
+
+              <button onClick={handleDeleteTodo(id)}>X</button>
+            </p>
           );
         })}
       </div>
